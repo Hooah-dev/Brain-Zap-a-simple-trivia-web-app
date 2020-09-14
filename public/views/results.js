@@ -5,7 +5,7 @@ function playAudioZap() {
   trackZap.volume = 0.2;
 }
 
-//CARD CENTRALE
+//CENTRAL CARD
 async function getPlayerData() {
   let arrData;
   await axios
@@ -16,7 +16,7 @@ async function getPlayerData() {
   centralCardBuilder(arrData)
 }
 
-//CARD SX
+//LEFT CARD
 async function getRankedScores() {
   let arrData;
   await axios
@@ -27,7 +27,7 @@ async function getRankedScores() {
   tableSxBuilder(arrData)
 }
 
-//Trova l'ID più alto (ultimo giocatore) e ne mostra le info
+//Finds the latest entry in the DB and displays its infos
 function centralCardBuilder(arr) {
   arr_id = arr.map(element => element.ID);
   let num = arr_id.indexOf(Math.max(...arr_id));
@@ -52,6 +52,6 @@ function tableSxBuilder(arr) {
   }
 }
 
-//CHIAMATA FUNZIONI
+//Functions called at page laod
 getPlayerData();
 getRankedScores();

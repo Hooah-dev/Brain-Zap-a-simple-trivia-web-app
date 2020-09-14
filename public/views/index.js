@@ -13,7 +13,7 @@ function playAudioZap() {
   trackZap.volume = 0.2;
 }
 
-//SUONI GIUSTO/SBAGLIATO sulle riposte, chiamata ad ogni "checkAnswerAndContinue".
+//WRONG/RIGHT SOUNDS (called at every "checkAnswerAndContinue")
 function correctSound() {
   if (sound) {
     let cSound = new Audio('../resources/sounds/game-sound-correct.wav');
@@ -30,7 +30,7 @@ function wrongSound() {
   }
 }
 
-//COLONNA SONORA
+//SOUNDTRACK
 let track = new Audio;
 function playAudio() {
   if (sound) {
@@ -48,7 +48,7 @@ function playAudio() {
   }, 3000);
 }
 
-//CONTROLLI AUDIO
+//AUDIO CONTROLS
 function audioControls() {
   if (sound) {
     track.pause();
@@ -61,7 +61,7 @@ function audioControls() {
   }
 }
 
-// Controlla se è presente il cookie con il nome del giocatore
+// Check if "player" name is in the Cookies
 function getNameFromCookies() {
   if (Cookies.get("player") === undefined) {
     document.getElementById("inputNameWrapper").classList.toggle('d-none');
@@ -73,7 +73,7 @@ function getNameFromCookies() {
   }
 }
 
-//Controllo input nome del giocatore
+//Input validation of player name
 function controlInputName() {
   let input = document.getElementById("inputName").value;
   if (Cookies.get("player") === undefined) {
@@ -86,7 +86,7 @@ function controlInputName() {
   }
 }
 
-// CRONOMETRO
+// TIMER
 let currentTime;
 let startCounter;
 let idTimeout;
@@ -110,7 +110,7 @@ function startChronometer() {
   upDateTime();
 }
 
-//Funzione di toggle di alcuni componenti dell'UI
+//Toggle some Ui components
 function toggleUi() {
   document.getElementById("optionSelection").classList.toggle('d-none');
   document.getElementById("radiaWrapper").classList.toggle('d-none');
@@ -118,7 +118,7 @@ function toggleUi() {
   document.getElementById("buttonWrapper").classList.toggle('d-flex');
 }
 
-//Costructor HTML che richiede lista categoria/id all'API e forma le relative opzioni dentro al form con id "category"
+//Dropdown Option Menu builder
 function getCategoryOptions() {
   let categoryArr;
   axios
@@ -137,7 +137,7 @@ function buildCategoryOptions(dataArr) {
   }
 }
 
-//Composizione dell'URL e chiamata all'API con le opzioni come query parameters
+//Sets up the URL to retrive Trivia questions
 function urlComposer() {
   let questionsNbrValue = document.getElementById("questionsNbr").value;
   let categoryValue = document.getElementById("category").value;
@@ -149,7 +149,7 @@ function urlComposer() {
   fetchApiQuestions(encodedComposedUrl);
 }
 
-//Chiamata all'API con ricezione delle domande
+//Retrives Trivia questions from the web-api
 function fetchApiQuestions(encodedUrl) {
   axios.get(`http://localhost:4001/index/${encodedUrl}`).then((response) => {
     console.log("Questo è response di fetchApiQuestions")
@@ -164,7 +164,7 @@ function fetchApiQuestions(encodedUrl) {
   });
 }
 
-//Render sul DOM delle domande e trigger di varie funzionalità
+//Renders questions in the DOM and triggers ausiliary effects
 function renderQuestions() {
   questionBuilder(questionData.questions);
   if (ranked == false) {
@@ -175,7 +175,7 @@ function renderQuestions() {
   startChronometer();
 }
 
-//Creazione della tabella di riepilogo in funzione del n° di domande
+//Creates the Recap list relative to the n° of questions chosen
 function createRecapList() {
   currentQuestion = 0;
   document.getElementById("recapList").innerHTML = ""; //svuota il Div ogni iterazione
@@ -191,7 +191,7 @@ function createRecapList() {
   document.getElementById("recapList").appendChild(recapList);
 }
 
-//Creazione dei Radio contententi le risposte
+//Creates the Radio with the possible answers
 function questionBuilder(questionArr) {
   questionData.questionText = questionArr[currentQuestion].question;
   questionData.correctAnswer = questionArr[currentQuestion].correct_answer;
@@ -215,7 +215,7 @@ function questionBuilder(questionArr) {
   }
 }
 
-//Funzione di shuffle per nascondere risposta giusta (sempre la prima dall'array dell'API)
+//Shuffles the answers from the web-api to hide the right one
 function shuffle(arra1) {
   let ctr = arra1.length;
   let temp;
@@ -231,7 +231,7 @@ function shuffle(arra1) {
   return arra1;
 }
 
-// Cerca il Radio(risposta) selezionato e ne prende il valore
+// Takes the value from the selected Radio
 function getRadioVal() {
   let selectedRadioValue;
   let radiosArr = document.getElementsByClassName("radioInput");
@@ -243,10 +243,10 @@ function getRadioVal() {
       break;
     }
   }
-  return selectedRadioValue; // returna il valore del radio "checked" o undefined nel caso non lo fosse nessuno
+  return selectedRadioValue;
 }
 
-//Se risposta giusta aumenta punteggio di 2, altrimenti -1. Cambia colore tabella riepilogo. Aumenta contatore domanda e carica nuova domanda. Se domande esaurite finisce gioco.
+//Sets the score (+2 / -1), changes color in the appropriate Recap list cell, select the new question or ends the game if it was the last one.
 function checkAnswerAndContinue(inputString) {
   let selectedRecapListCell = document
     .getElementById("recapList")
@@ -280,7 +280,7 @@ function checkAnswerAndContinue(inputString) {
   }
 }
 
-//Chiamata POST al backend a fine partita
+//POST call at game's end
 function postPlayerData(playerName, score, ranked, gameTime) {
   axios({
     method: 'post',
@@ -295,34 +295,33 @@ function postPlayerData(playerName, score, ranked, gameTime) {
   window.location.href = `/results`
 }
 
-//FUNZIONE BENVENUTO
+//Displays Player's Name
 function displayPlayerName(name) {
   document.getElementById("loggedPlayer").innerHTML = `<h4>Logged in as: ${name}</h4>`;
 }
 
-//Event Listener BOTTONI-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-
-//Bottone Controllo Audio
+//Bottons EVENT LISTNERS-----------
+//Audio Control button
 document.getElementById("audioControls").addEventListener("click", () => audioControls());
 
-//Bottone conferma risposta
+//Confirm Answer button
 document.getElementById("confirm").addEventListener("click", () => {
   checkAnswerAndContinue(getRadioVal());
 });
 
-//Bottone Get Started
+//Skip Answer button
+document.getElementById("skip").addEventListener("click", () => {
+  checkAnswerAndContinue("skip");
+});
+
+//"A Jugar" Button
 document
   .getElementById("urlComposer")
   .addEventListener("click", () => {
     urlComposer()
   });
 
-//Bottone salta domanda
-document.getElementById("skip").addEventListener("click", () => {
-  checkAnswerAndContinue("skip");
-});
-
-//Bottone invio nome
+//Set Player's Name button
 document.getElementById("confirmName").addEventListener("click", () => {
   document.getElementById("formName").classList.toggle('d-none');
   document.getElementById("formName").classList.toggle('d-flex');
@@ -332,7 +331,7 @@ document.getElementById("confirmName").addEventListener("click", () => {
   displayPlayerName(playerName);
 });
 
-//Bottone invio nome Ranked
+//Set Ranked Player's Name button
 document.getElementById("confirmNameRanked").addEventListener("click", () => {
   document.getElementById("formName").classList.toggle('d-none');
   document.getElementById("formName").classList.toggle('d-flex');
@@ -347,6 +346,6 @@ document.getElementById("confirmNameRanked").addEventListener("click", () => {
   displayPlayerName(playerName);
 })
 
-//Chiamata delle funzioni a caricamento pagina
+//Functions called at page load
 getCategoryOptions();
 getNameFromCookies();
